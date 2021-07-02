@@ -1,4 +1,5 @@
 import ast
+from pydantic import ValidationError
 
 from app.schemas import Message
 from app.main import consumer
@@ -11,5 +12,5 @@ async def consume_messages():
             msg_dict = ast.literal_eval(msg.value.decode('UTF-8'))
             message = Message(**msg_dict)
             await websocket_manager.broadcast(message.json())
-        except:
+        except (ValidationError, AttributeError, ValueError, SyntaxError, KeyError):
             continue
